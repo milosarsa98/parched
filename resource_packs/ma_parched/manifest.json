@@ -1,0 +1,24 @@
+{
+  "format_version": 2,
+  "header": {
+    "name": "Parched RP",
+    "description": "My resource pack description",
+    "uuid": "56938af4-df75-4495-9eff-3e67ecef5e6f",
+    "version": [1, 0, 0],
+    "min_engine_version": [1, 26, 20]
+  },
+  "modules": [
+    {
+      "description": "My Resource Pack",
+      "type": "resources",
+      "uuid": "503fe660-142b-46a2-8fec-34a54e944720",
+      "version": [1, 0, 0]
+    }
+  ],
+  "dependencies": [
+    {
+      "uuid": "50920940-a17f-4ce7-b4bb-2bd1d799c85a",
+      "version": [1, 0, 0]
+    }
+  ]
+}

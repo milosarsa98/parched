@@ -1,0 +1,26 @@
+{
+  "format_version": 2,
+  "header": {
+    "name": "Parched BP",
+    "description": "My behavior pack description",
+    "uuid": "50920940-a17f-4ce7-b4bb-2bd1d799c85a",
+    "version": [1, 0, 0],
+    "min_engine_version": [1, 26, 20]
+  },
+  "modules": [
+    {
+      "description": "Script resources",
+      "language": "javascript",
+      "type": "script",
+      "uuid": "0ad71c3a-6e47-4bfc-8152-cfae91e8f438",
+      "version": [1, 0, 0],
+      "entry": "scripts/main.js"
+    }
+  ],
+  "dependencies": [
+    {
+      "module_name": "@minecraft/server",
+      "version": [2, 7, 0]
+    }
+  ]
+}
