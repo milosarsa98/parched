@@ -151,7 +151,7 @@ const exertionValues = {
   walk: 0.005,
   sprint: 0.015,
   jump: 0.03,
-  swing: 0.005,
+  swing: 0.03,
 };
 
 const daytimeMultiplier = {

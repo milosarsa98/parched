@@ -38,8 +38,8 @@ export class EnvironmentModifier implements IHydrationModifier {
     }
 
     multiplier *= this.getDaytimeMultiplier(dimensionId);
-    multiplier *= this.getSkyExposureMultiplier(player, dimensionId);
-    multiplier *= this.getWeatherMultiplier(dimensionId, biomeId);
+    multiplier *= this.getSkyLightExposureMultiplier(player);
+    multiplier *= this.getWeatherMultiplier(player, biomeId);
 
     const inWater = player.isInWater;
 
@@ -71,8 +71,8 @@ export class EnvironmentModifier implements IHydrationModifier {
     );
   }
 
-  private getWeatherMultiplier(dimensionId: string, biomeId: string): number {
-    if (dimensionId !== "minecraft:overworld" || this.dryBiomes.has(biomeId)) {
+  private getWeatherMultiplier(player: Player, biomeId: string): number {
+    if (player.dimension.id !== "minecraft:overworld" || this.dryBiomes.has(biomeId) || !this.getSkyExposure(player)) {
       return 1;
     }
 
@@ -87,8 +87,8 @@ export class EnvironmentModifier implements IHydrationModifier {
     return 1;
   }
 
-  private getSkyExposureMultiplier(player: Player, dimensionId: string): number {
-    if (dimensionId !== "minecraft:overworld" || !this.isDay()) {
+  private getSkyLightExposureMultiplier(player: Player): number {
+    if (player.dimension.id !== "minecraft:overworld" || !this.isDay()) {
       return 1;
     }
 
@@ -99,6 +99,14 @@ export class EnvironmentModifier implements IHydrationModifier {
       this.config.skyExposureMultiplier.sheltered +
       (this.config.skyExposureMultiplier.exposed - this.config.skyExposureMultiplier.sheltered) * exposure
     );
+  }
+
+  // Used to check if the player is exposed to the open sky
+  private getSkyExposure(player: Player): number {
+    const headLocation = player.getHeadLocation();
+    const topmostBlock = player.dimension.getTopmostBlock({ x: headLocation.x, z: headLocation.z });
+
+    return topmostBlock === undefined || topmostBlock.y < headLocation.y ? 1 : 0;
   }
 
   private isDay(): boolean {
