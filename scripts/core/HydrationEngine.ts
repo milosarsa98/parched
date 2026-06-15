@@ -4,13 +4,12 @@ import {
   IHydrationConfig,
   IHydrationDrainRateContributor,
   IHydrationModifier,
-  IPlayerStatus,
   IPunishmentApplier,
 } from "../types/hydration";
 import { PROPERTY_IDS } from "./properties";
 
-import { UiRenderer } from "../utils/UiRenderer";
 import { Logger } from "../utils/Logger";
+import { HydrationStatusCache } from "./HydrationStatusCache";
 
 /**
  * HydrationEngine class responsible for managing player hydration mechanics.
@@ -21,23 +20,22 @@ export class HydrationEngine {
   private readonly modifiers: IHydrationModifier[];
   private readonly drainRateContributors: IHydrationDrainRateContributor[];
   private readonly punisher: IPunishmentApplier;
-  private readonly uiRenderer: UiRenderer;
   private readonly logger: Logger;
+  private readonly statusCache: HydrationStatusCache;
 
   constructor(
     config: IHydrationConfig,
     modifiers: IHydrationModifier[],
     drainRateContributors: IHydrationDrainRateContributor[],
     punisher: IPunishmentApplier,
-    uiRenderer: UiRenderer,
     logger: Logger
   ) {
     this.config = config;
     this.modifiers = modifiers;
     this.drainRateContributors = drainRateContributors;
     this.punisher = punisher;
-    this.uiRenderer = uiRenderer;
     this.logger = logger.child("HydrationEngine");
+    this.statusCache = new HydrationStatusCache(config);
   }
 
   public processPlayerTick(player: Player): void {
@@ -60,7 +58,6 @@ export class HydrationEngine {
   }
 
   public modifyHydration(player: Player, amount: number): void {
-    // Implementation for modifying player hydration based on modifiers
     const currentData = player.getDynamicProperty(PROPERTY_IDS.PLAYER_HYDRATION) as number | undefined;
     const currentHydration = currentData !== undefined ? currentData : this.config.maxHydration;
 
@@ -72,25 +69,12 @@ export class HydrationEngine {
   }
 
   public evaluatePlayerStatus(player: Player, currentHydration: number, liveRate?: number): void {
-    // Implementation for applying consequences when player hydration reaches zero
-
-    const isCritical = currentHydration <= this.config.criticalThreshold;
-    const depletionRate = liveRate !== undefined ? liveRate : this.config.baseDrainRate;
-
-    const status: IPlayerStatus = {
-      currentHydration,
-      maxHydration: this.config.maxHydration,
-      isCritical,
-      depletionRate,
-    };
-
-    // UI updates and other status effects can be handled here
-    this.uiRenderer.renderStatus(player, status);
+    const status = this.statusCache.remember(player.id, currentHydration, liveRate);
 
     if (currentHydration <= 0) {
       this.punisher.applyExhaustionDebuff(player);
       this.punisher.inflictDamage(player, 2); // Inflict damage when hydration reaches zero
-    } else if (isCritical) {
+    } else if (status.isCritical) {
       this.punisher.applyExhaustionDebuff(player);
     } else {
       this.punisher.clearEffects(player);
@@ -103,5 +87,29 @@ export class HydrationEngine {
     if (currentData !== undefined) return;
 
     player.setDynamicProperty(PROPERTY_IDS.PLAYER_HYDRATION, this.config.maxHydration);
+    this.statusCache.remember(player.id, this.config.maxHydration);
+  }
+
+  public resetPlayer(player: Player): void {
+    // Quite rudimentary for a start but it gets the job done
+    player.setDynamicProperty(PROPERTY_IDS.PLAYER_HYDRATION, this.config.maxHydration);
+    this.statusCache.remember(player.id, this.config.maxHydration);
+  }
+
+  public getCachedStatus(player: Player) {
+    const status = this.statusCache.get(player.id);
+
+    if (status !== undefined) {
+      return status;
+    }
+
+    const currentData = player.getDynamicProperty(PROPERTY_IDS.PLAYER_HYDRATION) as number | undefined;
+    const currentHydration = currentData !== undefined ? currentData : this.config.maxHydration;
+
+    return this.statusCache.remember(player.id, currentHydration);
+  }
+
+  public cleanupPlayer(playerId: string): void {
+    this.statusCache.clear(playerId);
   }
 }

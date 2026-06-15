@@ -1,6 +1,7 @@
 import { HYDRATION_CONFIG } from "./config";
 import { HydrationEngine } from "./core/HydrationEngine";
 import { DepletionLoop } from "./loops/DepletionLoop";
+import { UiLoop } from "./loops/UiLoop";
 import { UiRenderer } from "./utils/UiRenderer";
 import { EnvironmentModifier } from "./logic/EnvironmentModifier";
 import { PunishmentApplier } from "./logic/PunishmentApplier";
@@ -15,7 +16,7 @@ const logger = new Logger("Parched");
 
 const uiRendered = new UiRenderer();
 const punishmentApplier = new PunishmentApplier();
-const tracker = new ActivityTracker();
+const tracker = new ActivityTracker(HYDRATION_CONFIG);
 tracker.start();
 
 const modifiers = [new EnvironmentModifier(HYDRATION_CONFIG)];
@@ -26,15 +27,16 @@ const hydrationEngine = new HydrationEngine(
   modifiers,
   drainRateContributors,
   punishmentApplier,
-  uiRendered,
   logger
 );
+const uiLoop = new UiLoop(hydrationEngine, uiRendered, HYDRATION_CONFIG.uiTickInterval);
 
 // handlers go here
-new PlayerLifecycleHandler(hydrationEngine, tracker);
+new PlayerLifecycleHandler(hydrationEngine, tracker, uiLoop);
 new ItemConsumableHandler(hydrationEngine, HYDRATION_CONFIG);
 new WorldInteractionHandler(hydrationEngine);
 
 const depletionLoop = new DepletionLoop(hydrationEngine, HYDRATION_CONFIG.tickInterval);
 
 depletionLoop.start();
+uiLoop.start();

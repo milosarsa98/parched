@@ -24,14 +24,15 @@ export class EnvironmentModifier implements IHydrationModifier {
       multiplier *= dimensionMultiplier;
     }
 
-    const biomeId = this.getBiomeId(player);
     const biomeMultiplier = this.getBiomeBase(player);
 
     if (biomeMultiplier !== undefined) {
       multiplier *= biomeMultiplier;
     }
 
-    return multiplier;
+    const inWater = player.isInWater;
+
+    return multiplier * (inWater ? 0.3 : 1);
   }
 
   private getBiomeBase(player: Player): number {

@@ -3,8 +3,15 @@ import { Player } from "@minecraft/server";
 export interface IHydrationConfig {
   readonly baseDrainRate: number;
   readonly tickInterval: number;
+  readonly uiTickInterval: number;
   readonly maxHydration: number;
   readonly criticalThreshold: number;
+  readonly exertionValues: {
+    readonly walk: number;
+    readonly sprint: number;
+    readonly jump: number;
+    readonly swing: number;
+  };
   readonly itemValues: Record<string, number>;
   readonly biomeMultipliers: Record<string, number>;
   readonly dimensionMultipliers: Record<string, number>;

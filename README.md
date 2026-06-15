@@ -11,7 +11,7 @@ stuff in here right now:
 - activity based drain
 - item hydration values
 - debuffs when you're too low
-- action bar ui
+- action bar ui with a faster refresh loop
 
 all the actual code i care about is in `scripts/`.
 
@@ -20,7 +20,7 @@ all the actual code i care about is in `scripts/`.
 - `logic/` is modifier / punishment stuff
 - `handlers/` is event hooks
 - `utils/` is random support stuff
-- `config.ts` is where i mess with balance numbers
+- `config.ts` is where i mess with balance numbers and exertion values
 
 build:
 

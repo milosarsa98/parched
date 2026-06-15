@@ -53,8 +53,8 @@ const itemValues: Record<string, number> = {
 
 const dimensionMultipliers = {
   "minecraft:overworld": 1.0,
-  "minecraft:nether": 1.5,
-  "minecraft:end": 1.2,
+  "minecraft:nether": 2.0,
+  "minecraft:end": 1.5,
 };
 
 const biomeMultipliers: Record<string, number> = {
@@ -147,11 +147,20 @@ const biomeMultipliers: Record<string, number> = {
   [MinecraftBiomeTypes.WarpedForest]: 1.15,
 };
 
+const exertionValues = {
+  walk: 0.005,
+  sprint: 0.015,
+  jump: 0.03,
+  swing: 0.005,
+};
+
 export const HYDRATION_CONFIG: IHydrationConfig = {
-  baseDrainRate: 0.1, // Base hydration drain rate per tick
+  baseDrainRate: 0.01, // Base hydration drain rate per tick
   tickInterval: 20, // Number of ticks between hydration updates
+  uiTickInterval: 5, // Number of ticks between hydration UI refreshes
   maxHydration: 100, // Maximum hydration level
   criticalThreshold: 20, // Hydration level considered critical
+  exertionValues: exertionValues,
   itemValues: itemValues,
   biomeMultipliers: biomeMultipliers,
   dimensionMultipliers: dimensionMultipliers,
