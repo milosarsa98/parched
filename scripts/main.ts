@@ -10,7 +10,7 @@ import { ActivityModifier } from "./logic/ActivityModifier";
 import { ActivityTracker } from "./core/ActivityTracker";
 import { PlayerLifecycleHandler } from "./handlers/PlayerLifecycleHandler";
 import { ItemConsumableHandler } from "./handlers/ItemConsumableHandler";
-import { WorldInteractionHandler } from "./handlers/WorldInteractionHandler";
+import { PunishmentLoop } from "./loops/PunishmentLoop";
 
 const logger = new Logger("Parched");
 
@@ -22,21 +22,17 @@ tracker.start();
 const modifiers = [new EnvironmentModifier(HYDRATION_CONFIG)];
 const drainRateContributors = [new ActivityModifier(tracker)];
 
-const hydrationEngine = new HydrationEngine(
-  HYDRATION_CONFIG,
-  modifiers,
-  drainRateContributors,
-  punishmentApplier,
-  logger
-);
-const uiLoop = new UiLoop(hydrationEngine, uiRendered, HYDRATION_CONFIG.uiTickInterval);
+const hydrationEngine = new HydrationEngine(HYDRATION_CONFIG, modifiers, drainRateContributors, logger);
 
-// handlers go here
-new PlayerLifecycleHandler(hydrationEngine, tracker, uiLoop);
-new ItemConsumableHandler(hydrationEngine, HYDRATION_CONFIG);
-new WorldInteractionHandler(hydrationEngine);
-
+// Initializing loops
 const depletionLoop = new DepletionLoop(hydrationEngine, HYDRATION_CONFIG.tickInterval);
+const uiLoop = new UiLoop(hydrationEngine, uiRendered, HYDRATION_CONFIG.uiTickInterval);
+const punishmentLoop = new PunishmentLoop(hydrationEngine, punishmentApplier, HYDRATION_CONFIG.punishTickInterval);
 
 depletionLoop.start();
 uiLoop.start();
+punishmentLoop.start();
+
+// Initializing handlers
+new PlayerLifecycleHandler(hydrationEngine, tracker, uiLoop);
+new ItemConsumableHandler(hydrationEngine, HYDRATION_CONFIG);

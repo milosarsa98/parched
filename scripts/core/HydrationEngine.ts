@@ -1,15 +1,13 @@
 import { Player } from "@minecraft/server";
 
-import {
-  IHydrationConfig,
-  IHydrationDrainRateContributor,
-  IHydrationModifier,
-  IPunishmentApplier,
-} from "../types/hydration";
-import { PROPERTY_IDS } from "./properties";
+import { IHydrationConfig, IHydrationDrainRateContributor, IHydrationModifier } from "../types/hydration";
 
 import { Logger } from "../utils/Logger";
 import { HydrationStatusCache } from "./HydrationStatusCache";
+
+const PROPERTY_IDS = {
+  PLAYER_HYDRATION: "parched:player_hydration",
+} as const;
 
 /**
  * HydrationEngine class responsible for managing player hydration mechanics.
@@ -19,7 +17,6 @@ export class HydrationEngine {
   private readonly config: IHydrationConfig;
   private readonly modifiers: IHydrationModifier[];
   private readonly drainRateContributors: IHydrationDrainRateContributor[];
-  private readonly punisher: IPunishmentApplier;
   private readonly logger: Logger;
   private readonly statusCache: HydrationStatusCache;
 
@@ -27,13 +24,11 @@ export class HydrationEngine {
     config: IHydrationConfig,
     modifiers: IHydrationModifier[],
     drainRateContributors: IHydrationDrainRateContributor[],
-    punisher: IPunishmentApplier,
     logger: Logger
   ) {
     this.config = config;
     this.modifiers = modifiers;
     this.drainRateContributors = drainRateContributors;
-    this.punisher = punisher;
     this.logger = logger.child("HydrationEngine");
     this.statusCache = new HydrationStatusCache(config);
   }
@@ -65,20 +60,7 @@ export class HydrationEngine {
 
     player.setDynamicProperty(PROPERTY_IDS.PLAYER_HYDRATION, newHydration);
 
-    this.evaluatePlayerStatus(player, newHydration, amount);
-  }
-
-  public evaluatePlayerStatus(player: Player, currentHydration: number, liveRate?: number): void {
-    const status = this.statusCache.remember(player.id, currentHydration, liveRate);
-
-    if (currentHydration <= 0) {
-      this.punisher.applyExhaustionDebuff(player);
-      this.punisher.inflictDamage(player, 2); // Inflict damage when hydration reaches zero
-    } else if (status.isCritical) {
-      this.punisher.applyExhaustionDebuff(player);
-    } else {
-      this.punisher.clearEffects(player);
-    }
+    this.statusCache.remember(player.id, newHydration, amount);
   }
 
   public initializePlayer(player: Player): void {

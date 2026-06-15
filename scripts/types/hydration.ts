@@ -4,6 +4,7 @@ export interface IHydrationConfig {
   readonly baseDrainRate: number;
   readonly tickInterval: number;
   readonly uiTickInterval: number;
+  readonly punishTickInterval: number;
   readonly maxHydration: number;
   readonly criticalThreshold: number;
   readonly exertionValues: {
