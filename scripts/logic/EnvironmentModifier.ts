@@ -1,16 +1,23 @@
-import { Player } from "@minecraft/server";
+import { Player, WeatherType, world } from "@minecraft/server";
 
 import { IHydrationConfig, IHydrationModifier } from "../types/hydration";
 
 /**
- * Enmvioronment modifier should factor in not just the biome and the dimension
+ * Environment modifier should factor in not just the biome and the dimension
  * It should also count in the direct exposure to the sun, exposure in the shade and exposure during the night
  */
 export class EnvironmentModifier implements IHydrationModifier {
   private readonly config: IHydrationConfig;
+  private readonly dryBiomes: Set<string>;
+  private currentWeather = WeatherType.Clear;
 
   constructor(config: IHydrationConfig) {
     this.config = config;
+    this.dryBiomes = new Set(config.weatherMultiplier.dryBiomes);
+
+    world.afterEvents.weatherChange.subscribe((event) => {
+      this.currentWeather = event.newWeather;
+    });
   }
 
   public calculateMultiplier(player: Player): number {
@@ -23,28 +30,59 @@ export class EnvironmentModifier implements IHydrationModifier {
       multiplier *= dimensionMultiplier;
     }
 
-    const biomeMultiplier = this.getBiomeBase(player);
+    const biomeId = this.getBiomeId(player);
+    const biomeMultiplier = this.getBiomeBase(biomeId);
 
     if (biomeMultiplier !== undefined) {
       multiplier *= biomeMultiplier;
     }
+
+    multiplier *= this.getDaytimeMultiplier(dimensionId);
+    multiplier *= this.getWeatherMultiplier(dimensionId, biomeId);
 
     const inWater = player.isInWater;
 
     return multiplier * (inWater ? 0.3 : 1);
   }
 
-  private getBiomeBase(player: Player): number {
-    const biomeId = this.getBiomeId(player);
-
-    let multiplier = this.config.biomeMultipliers[biomeId];
-
-    return multiplier;
+  private getBiomeBase(biomeId: string): number {
+    return this.config.biomeMultipliers[biomeId];
   }
 
   private getBiomeId(player: Player): string {
     const biomeId = player.dimension.getBiome(player.location).id;
 
     return biomeId;
+  }
+
+  private getDaytimeMultiplier(dimensionId: string): number {
+    if (dimensionId !== "minecraft:overworld") {
+      return 1;
+    }
+
+    const timeOfDay = world.getTimeOfDay();
+    const noonOffset = (timeOfDay - 6000) / 24000;
+    const noonStrength = (Math.cos(noonOffset * Math.PI * 2) + 1) / 2;
+
+    return (
+      this.config.daytimeMultiplier.midnight +
+      (this.config.daytimeMultiplier.noon - this.config.daytimeMultiplier.midnight) * noonStrength
+    );
+  }
+
+  private getWeatherMultiplier(dimensionId: string, biomeId: string): number {
+    if (dimensionId !== "minecraft:overworld" || this.dryBiomes.has(biomeId)) {
+      return 1;
+    }
+
+    if (this.currentWeather === WeatherType.Thunder) {
+      return this.config.weatherMultiplier.thunder;
+    }
+
+    if (this.currentWeather === WeatherType.Rain) {
+      return this.config.weatherMultiplier.rain;
+    }
+
+    return 1;
   }
 }

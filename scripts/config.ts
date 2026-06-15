@@ -154,6 +154,33 @@ const exertionValues = {
   swing: 0.005,
 };
 
+const daytimeMultiplier = {
+  midnight: 0.7,
+  noon: 1.2,
+};
+
+const dryBiomes = [
+  MinecraftBiomeTypes.Desert,
+  MinecraftBiomeTypes.DesertHills,
+  MinecraftBiomeTypes.DesertMutated,
+  MinecraftBiomeTypes.Mesa,
+  MinecraftBiomeTypes.MesaBryce,
+  MinecraftBiomeTypes.MesaPlateau,
+  MinecraftBiomeTypes.MesaPlateauMutated,
+  MinecraftBiomeTypes.MesaPlateauStone,
+  MinecraftBiomeTypes.MesaPlateauStoneMutated,
+  MinecraftBiomeTypes.Savanna,
+  MinecraftBiomeTypes.SavannaMutated,
+  MinecraftBiomeTypes.SavannaPlateau,
+  MinecraftBiomeTypes.SavannaPlateauMutated,
+];
+
+const weatherMultiplier = {
+  rain: 0.85,
+  thunder: 0.8,
+  dryBiomes: dryBiomes,
+};
+
 export const HYDRATION_CONFIG: IHydrationConfig = {
   baseDrainRate: 0.01, // Base hydration drain rate per tick
   tickInterval: 20, // Number of ticks between hydration updates
@@ -162,6 +189,8 @@ export const HYDRATION_CONFIG: IHydrationConfig = {
   maxHydration: 100, // Maximum hydration level
   criticalThreshold: 20, // Hydration level considered critical
   exertionValues: exertionValues,
+  daytimeMultiplier: daytimeMultiplier,
+  weatherMultiplier: weatherMultiplier,
   itemValues: itemValues,
   biomeMultipliers: biomeMultipliers,
   dimensionMultipliers: dimensionMultipliers,

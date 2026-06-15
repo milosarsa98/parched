@@ -8,6 +8,8 @@ stuff in here right now:
 
 - hydration drain
 - biome + dimension modifiers
+- day/night and weather modifiers
+- water lowers environmental drain
 - activity based drain
 - item hydration values
 - debuffs when you're too low
@@ -20,7 +22,7 @@ all the actual code i care about is in `scripts/`.
 - `logic/` is modifier / punishment stuff
 - `handlers/` is event hooks
 - `utils/` is random support stuff
-- `config.ts` is where i mess with balance numbers and exertion values
+- `config.ts` is where i mess with balance numbers, weather stuff and exertion values
 
 build:
 

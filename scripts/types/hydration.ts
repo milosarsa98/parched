@@ -13,6 +13,15 @@ export interface IHydrationConfig {
     readonly jump: number;
     readonly swing: number;
   };
+  readonly daytimeMultiplier: {
+    readonly midnight: number;
+    readonly noon: number;
+  };
+  readonly weatherMultiplier: {
+    readonly rain: number;
+    readonly thunder: number;
+    readonly dryBiomes: readonly string[];
+  };
   readonly itemValues: Record<string, number>;
   readonly biomeMultipliers: Record<string, number>;
   readonly dimensionMultipliers: Record<string, number>;
