@@ -181,6 +181,11 @@ const weatherMultiplier = {
   dryBiomes: dryBiomes,
 };
 
+const skyExposureMultiplier = {
+  sheltered: 0.85,
+  exposed: 1.15,
+};
+
 export const HYDRATION_CONFIG: IHydrationConfig = {
   baseDrainRate: 0.01, // Base hydration drain rate per tick
   tickInterval: 20, // Number of ticks between hydration updates
@@ -191,6 +196,7 @@ export const HYDRATION_CONFIG: IHydrationConfig = {
   exertionValues: exertionValues,
   daytimeMultiplier: daytimeMultiplier,
   weatherMultiplier: weatherMultiplier,
+  skyExposureMultiplier: skyExposureMultiplier,
   itemValues: itemValues,
   biomeMultipliers: biomeMultipliers,
   dimensionMultipliers: dimensionMultipliers,

@@ -38,6 +38,7 @@ export class EnvironmentModifier implements IHydrationModifier {
     }
 
     multiplier *= this.getDaytimeMultiplier(dimensionId);
+    multiplier *= this.getSkyExposureMultiplier(player, dimensionId);
     multiplier *= this.getWeatherMultiplier(dimensionId, biomeId);
 
     const inWater = player.isInWater;
@@ -84,5 +85,29 @@ export class EnvironmentModifier implements IHydrationModifier {
     }
 
     return 1;
+  }
+
+  private getSkyExposureMultiplier(player: Player, dimensionId: string): number {
+    if (dimensionId !== "minecraft:overworld" || !this.isDay()) {
+      return 1;
+    }
+
+    const skyLightLevel = player.dimension.getSkyLightLevel(player.getHeadLocation());
+    const exposure = Math.max(0, Math.min(1, skyLightLevel / 15));
+
+    return (
+      this.config.skyExposureMultiplier.sheltered +
+      (this.config.skyExposureMultiplier.exposed - this.config.skyExposureMultiplier.sheltered) * exposure
+    );
+  }
+
+  private isDay(): boolean {
+    if (this.currentWeather !== WeatherType.Clear) {
+      return false;
+    }
+
+    const timeOfDay = world.getTimeOfDay();
+
+    return timeOfDay >= 0 && timeOfDay < 12000;
   }
 }

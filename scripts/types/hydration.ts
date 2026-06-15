@@ -22,6 +22,10 @@ export interface IHydrationConfig {
     readonly thunder: number;
     readonly dryBiomes: readonly string[];
   };
+  readonly skyExposureMultiplier: {
+    readonly sheltered: number;
+    readonly exposed: number;
+  };
   readonly itemValues: Record<string, number>;
   readonly biomeMultipliers: Record<string, number>;
   readonly dimensionMultipliers: Record<string, number>;
