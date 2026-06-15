@@ -1,5 +1,5 @@
 import { Player } from "@minecraft/server";
-import { IHydrationConfig, IHydrationDrainRateContributor } from "../types/hydration";
+import { IHydrationDrainRateContributor } from "../types/hydration";
 import { ActivityTracker } from "../core/ActivityTracker";
 
 export class ActivityModifier implements IHydrationDrainRateContributor {

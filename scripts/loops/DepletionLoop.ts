@@ -1,10 +1,9 @@
-import { system, world } from "@minecraft/server";
+import { world } from "@minecraft/server";
 import { HydrationEngine } from "../core/HydrationEngine";
 import { AbstractLoop } from "./AbstractLoop";
 
 export class DepletionLoop extends AbstractLoop {
   private readonly hydrationEngine: HydrationEngine;
-  private jobId: number | null = null;
 
   constructor(hydrationEngine: HydrationEngine, tickInterval: number) {
     super(tickInterval);

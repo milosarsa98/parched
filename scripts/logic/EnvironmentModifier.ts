@@ -1,7 +1,6 @@
 import { Player } from "@minecraft/server";
 
 import { IHydrationConfig, IHydrationModifier } from "../types/hydration";
-import { Logger } from "../utils/Logger";
 
 /**
  * Enmvioronment modifier should factor in not just the biome and the dimension
