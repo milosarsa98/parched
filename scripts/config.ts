@@ -6,49 +6,49 @@ import { MinecraftBiomeTypes, MinecraftItemTypes } from "@minecraft/vanilla-data
 import { IHydrationConfig } from "./types/hydration";
 
 const itemValues: Record<string, number> = {
-  [MinecraftItemTypes.Potion]: 12,
-  [MinecraftItemTypes.MilkBucket]: 8,
-  [MinecraftItemTypes.HoneyBottle]: 10,
-  [MinecraftItemTypes.BeetrootSoup]: 16,
-  [MinecraftItemTypes.MushroomStew]: 14,
-  [MinecraftItemTypes.RabbitStew]: 18,
-  [MinecraftItemTypes.SuspiciousStew]: 12,
-  [MinecraftItemTypes.MelonSlice]: 6,
-  [MinecraftItemTypes.Apple]: 4,
-  [MinecraftItemTypes.GoldenApple]: 8,
-  [MinecraftItemTypes.EnchantedGoldenApple]: 12,
-  [MinecraftItemTypes.GoldenCarrot]: 5,
-  [MinecraftItemTypes.GlowBerries]: 4,
-  [MinecraftItemTypes.SweetBerries]: 3,
-  [MinecraftItemTypes.Beetroot]: 2,
-  [MinecraftItemTypes.Carrot]: 3,
-  [MinecraftItemTypes.Potato]: 1,
-  [MinecraftItemTypes.BakedPotato]: 2,
-  [MinecraftItemTypes.DriedKelp]: 1,
-  [MinecraftItemTypes.ChorusFruit]: 3,
-  [MinecraftItemTypes.Bread]: -1,
-  [MinecraftItemTypes.Cookie]: -1,
-  [MinecraftItemTypes.PumpkinPie]: -2,
-  [MinecraftItemTypes.Cod]: 2,
-  [MinecraftItemTypes.Salmon]: 2,
-  [MinecraftItemTypes.TropicalFish]: 1,
-  [MinecraftItemTypes.CookedCod]: 1,
-  [MinecraftItemTypes.CookedSalmon]: 1,
-  [MinecraftItemTypes.Beef]: -2,
-  [MinecraftItemTypes.Chicken]: -2,
-  [MinecraftItemTypes.Mutton]: -2,
-  [MinecraftItemTypes.Porkchop]: -2,
-  [MinecraftItemTypes.Rabbit]: -1,
-  [MinecraftItemTypes.CookedBeef]: -4,
-  [MinecraftItemTypes.CookedChicken]: -4,
-  [MinecraftItemTypes.CookedMutton]: -4,
-  [MinecraftItemTypes.CookedPorkchop]: -4,
-  [MinecraftItemTypes.CookedRabbit]: -3,
-  [MinecraftItemTypes.Pufferfish]: -12,
-  [MinecraftItemTypes.PoisonousPotato]: -10,
-  [MinecraftItemTypes.RottenFlesh]: -8,
-  [MinecraftItemTypes.SpiderEye]: -10,
-  [MinecraftItemTypes.OminousBottle]: -15,
+  [MinecraftItemTypes.Potion]: 35,
+  [MinecraftItemTypes.MilkBucket]: 20,
+  [MinecraftItemTypes.HoneyBottle]: 12,
+  [MinecraftItemTypes.BeetrootSoup]: 28,
+  [MinecraftItemTypes.MushroomStew]: 24,
+  [MinecraftItemTypes.RabbitStew]: 30,
+  [MinecraftItemTypes.SuspiciousStew]: 22,
+  [MinecraftItemTypes.MelonSlice]: 12,
+  [MinecraftItemTypes.Apple]: 8,
+  [MinecraftItemTypes.GoldenApple]: 15,
+  [MinecraftItemTypes.EnchantedGoldenApple]: 35,
+  [MinecraftItemTypes.GoldenCarrot]: 10,
+  [MinecraftItemTypes.GlowBerries]: 7,
+  [MinecraftItemTypes.SweetBerries]: 6,
+  [MinecraftItemTypes.Beetroot]: 5,
+  [MinecraftItemTypes.Carrot]: 6,
+  [MinecraftItemTypes.Potato]: 2,
+  [MinecraftItemTypes.BakedPotato]: -6,
+  [MinecraftItemTypes.DriedKelp]: -8,
+  [MinecraftItemTypes.ChorusFruit]: 6,
+  [MinecraftItemTypes.Bread]: -7,
+  [MinecraftItemTypes.Cookie]: -6,
+  [MinecraftItemTypes.PumpkinPie]: -5,
+  [MinecraftItemTypes.Cod]: 4,
+  [MinecraftItemTypes.Salmon]: 4,
+  [MinecraftItemTypes.TropicalFish]: 3,
+  [MinecraftItemTypes.CookedCod]: -5,
+  [MinecraftItemTypes.CookedSalmon]: -5,
+  [MinecraftItemTypes.Beef]: -4,
+  [MinecraftItemTypes.Chicken]: -4,
+  [MinecraftItemTypes.Mutton]: -4,
+  [MinecraftItemTypes.Porkchop]: -4,
+  [MinecraftItemTypes.Rabbit]: -3,
+  [MinecraftItemTypes.CookedBeef]: -12,
+  [MinecraftItemTypes.CookedChicken]: -10,
+  [MinecraftItemTypes.CookedMutton]: -12,
+  [MinecraftItemTypes.CookedPorkchop]: -12,
+  [MinecraftItemTypes.CookedRabbit]: -8,
+  [MinecraftItemTypes.Pufferfish]: -25,
+  [MinecraftItemTypes.PoisonousPotato]: -20,
+  [MinecraftItemTypes.RottenFlesh]: -18,
+  [MinecraftItemTypes.SpiderEye]: -20,
+  [MinecraftItemTypes.OminousBottle]: -30,
 };
 
 const dimensionMultipliers = {
@@ -148,15 +148,15 @@ const biomeMultipliers: Record<string, number> = {
 };
 
 const exertionValues = {
-  walk: 0.005,
-  sprint: 0.015,
-  jump: 0.03,
-  swing: 0.03,
+  walk: 0.01,
+  sprint: 0.04,
+  jump: 0.08,
+  swing: 0.05,
 };
 
 const daytimeMultiplier = {
-  midnight: 0.7,
-  noon: 1.2,
+  midnight: 0.85,
+  noon: 1.3,
 };
 
 const dryBiomes = [
@@ -176,14 +176,14 @@ const dryBiomes = [
 ];
 
 const weatherMultiplier = {
-  rain: 0.85,
-  thunder: 0.8,
+  rain: 0.75,
+  thunder: 0.65,
   dryBiomes: dryBiomes,
 };
 
 const skyExposureMultiplier = {
-  sheltered: 0.85,
-  exposed: 1.15,
+  sheltered: 0.8,
+  exposed: 1.25,
 };
 
 export const HYDRATION_CONFIG: IHydrationConfig = {

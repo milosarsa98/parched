@@ -38,7 +38,7 @@ export class EnvironmentModifier implements IHydrationModifier {
     }
 
     multiplier *= this.getDaytimeMultiplier(dimensionId);
-    multiplier *= this.getSkyLightExposureMultiplier(player);
+    multiplier *= this.getSunExposureMultiplier(player);
     multiplier *= this.getWeatherMultiplier(player, biomeId);
 
     const inWater = player.isInWater;
@@ -65,10 +65,11 @@ export class EnvironmentModifier implements IHydrationModifier {
     const noonOffset = (timeOfDay - 6000) / 24000;
     const noonStrength = (Math.cos(noonOffset * Math.PI * 2) + 1) / 2;
 
-    return (
+    const multiplier =
       this.config.daytimeMultiplier.midnight +
-      (this.config.daytimeMultiplier.noon - this.config.daytimeMultiplier.midnight) * noonStrength
-    );
+      (this.config.daytimeMultiplier.noon - this.config.daytimeMultiplier.midnight) * noonStrength;
+
+    return multiplier;
   }
 
   private getWeatherMultiplier(player: Player, biomeId: string): number {
@@ -87,18 +88,19 @@ export class EnvironmentModifier implements IHydrationModifier {
     return 1;
   }
 
-  private getSkyLightExposureMultiplier(player: Player): number {
-    if (player.dimension.id !== "minecraft:overworld" || !this.isDay()) {
+  private getSunExposureMultiplier(player: Player): number {
+    if (player.dimension.id !== "minecraft:overworld" || !this.isClearDaytime()) {
       return 1;
     }
 
     const skyLightLevel = player.dimension.getSkyLightLevel(player.getHeadLocation());
     const exposure = Math.max(0, Math.min(1, skyLightLevel / 15));
 
-    return (
+    const multiplier =
       this.config.skyExposureMultiplier.sheltered +
-      (this.config.skyExposureMultiplier.exposed - this.config.skyExposureMultiplier.sheltered) * exposure
-    );
+      (this.config.skyExposureMultiplier.exposed - this.config.skyExposureMultiplier.sheltered) * exposure;
+
+    return multiplier;
   }
 
   // Used to check if the player is exposed to the open sky
@@ -109,7 +111,7 @@ export class EnvironmentModifier implements IHydrationModifier {
     return topmostBlock === undefined || topmostBlock.y < headLocation.y ? 1 : 0;
   }
 
-  private isDay(): boolean {
+  private isClearDaytime(): boolean {
     if (this.currentWeather !== WeatherType.Clear) {
       return false;
     }
