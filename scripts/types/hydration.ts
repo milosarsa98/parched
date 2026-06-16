@@ -46,14 +46,6 @@ export interface IEnvironmentSnapshot {
   readonly finalMultiplier: number;
 }
 
-export interface IHydrationModifier {
-  calculateMultiplier(player: Player): number;
-}
-
-export interface IHydrationDrainRateContributor {
-  calculateDrainRate(player: Player): number;
-}
-
 export interface IPlayerStatus {
   readonly currentHydration: number;
   readonly maxHydration: number;

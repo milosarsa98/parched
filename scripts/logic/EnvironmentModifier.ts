@@ -1,12 +1,12 @@
 import { Player, WeatherType, world } from "@minecraft/server";
 
-import { IEnvironmentSnapshot, IHydrationConfig, IHydrationModifier } from "../types/hydration";
+import { IEnvironmentSnapshot, IHydrationConfig } from "../types/hydration";
 
 /**
  * Environment modifier should factor in not just the biome and the dimension
  * It should also count in the direct exposure to the sun, exposure in the shade and exposure during the night
  */
-export class EnvironmentModifier implements IHydrationModifier {
+export class EnvironmentModifier {
   private readonly config: IHydrationConfig;
   private readonly dryBiomes: Set<string>;
   private currentWeather = WeatherType.Clear;

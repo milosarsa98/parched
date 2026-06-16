@@ -1,12 +1,9 @@
 import { Player } from "@minecraft/server";
 
-import {
-  IHydrationConfig,
-  IHydrationDrainRateContributor,
-  IHydrationModifier,
-  IPlayerStatus,
-} from "../types/hydration";
+import { IHydrationConfig, IPlayerStatus } from "../types/hydration";
 
+import { ActivityModifier } from "../logic/ActivityModifier";
+import { EnvironmentModifier } from "../logic/EnvironmentModifier";
 import { Logger } from "../utils/Logger";
 import { HydrationStatusCache } from "./HydrationStatusCache";
 
@@ -20,40 +17,32 @@ const PROPERTY_IDS = {
 
 export class HydrationEngine {
   private readonly config: IHydrationConfig;
-  private readonly modifiers: IHydrationModifier[];
-  private readonly drainRateContributors: IHydrationDrainRateContributor[];
+  private readonly environmentModifier: EnvironmentModifier;
+  private readonly activityModifier: ActivityModifier;
   private readonly logger: Logger;
   private readonly statusCache: HydrationStatusCache;
 
   constructor(
     config: IHydrationConfig,
-    modifiers: IHydrationModifier[],
-    drainRateContributors: IHydrationDrainRateContributor[],
+    environmentModifier: EnvironmentModifier,
+    activityModifier: ActivityModifier,
     logger: Logger
   ) {
     this.config = config;
-    this.modifiers = modifiers;
-    this.drainRateContributors = drainRateContributors;
+    this.environmentModifier = environmentModifier;
+    this.activityModifier = activityModifier;
     this.logger = logger.child("HydrationEngine");
     this.statusCache = new HydrationStatusCache(config);
   }
 
   public processPlayerTick(player: Player): void {
-    // Implementation for processing player hydration tick
-    let totalMultiplier = 1.0;
-    let totalDrainRate = this.config.baseDrainRate; // Start from the base drain rate
+    const environmentMultiplier = this.environmentModifier.calculateMultiplier(player);
+    const activityDrainRate = this.activityModifier.calculateDrainRate(player);
+    const totalDrainRate = this.config.baseDrainRate + activityDrainRate;
 
-    for (const modifier of this.modifiers) {
-      totalMultiplier *= modifier.calculateMultiplier(player);
-    }
+    this.logger.info(`Player: '${player.name}' DrainRate: ${totalDrainRate} Multiplier: ${environmentMultiplier} `);
 
-    for (const drainRate of this.drainRateContributors) {
-      totalDrainRate += drainRate.calculateDrainRate(player);
-    }
-
-    this.logger.info(`Player: '${player.name}' DrainRate: ${totalDrainRate} Multiplier: ${totalMultiplier} `);
-
-    const liveRate = totalDrainRate * totalMultiplier;
+    const liveRate = totalDrainRate * environmentMultiplier;
     this.modifyHydration(player, -liveRate);
   }
 

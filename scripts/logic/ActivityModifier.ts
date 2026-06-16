@@ -1,8 +1,7 @@
 import { Player } from "@minecraft/server";
-import { IHydrationDrainRateContributor } from "../types/hydration";
 import { ActivityTracker } from "../core/ActivityTracker";
 
-export class ActivityModifier implements IHydrationDrainRateContributor {
+export class ActivityModifier {
   private readonly tracker: ActivityTracker;
 
   constructor(tracker: ActivityTracker) {

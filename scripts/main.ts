@@ -19,10 +19,10 @@ const punishmentApplier = new PunishmentApplier();
 const tracker = new ActivityTracker(HYDRATION_CONFIG);
 tracker.start();
 
-const modifiers = [new EnvironmentModifier(HYDRATION_CONFIG)];
-const drainRateContributors = [new ActivityModifier(tracker)];
+const environmentModifier = new EnvironmentModifier(HYDRATION_CONFIG);
+const activityModifier = new ActivityModifier(tracker);
 
-const hydrationEngine = new HydrationEngine(HYDRATION_CONFIG, modifiers, drainRateContributors, logger);
+const hydrationEngine = new HydrationEngine(HYDRATION_CONFIG, environmentModifier, activityModifier, logger);
 
 // Initializing loops
 const depletionLoop = new DepletionLoop(hydrationEngine, HYDRATION_CONFIG.tickInterval);
