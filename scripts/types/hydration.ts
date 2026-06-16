@@ -31,6 +31,21 @@ export interface IHydrationConfig {
   readonly dimensionMultipliers: Record<string, number>;
 }
 
+export interface IEnvironmentSnapshot {
+  readonly dimensionId: string;
+  readonly biomeId: string;
+  readonly weather: string;
+  readonly isInWater: boolean;
+  readonly isOpenToSky: boolean;
+  readonly dimensionMultiplier: number;
+  readonly biomeMultiplier: number;
+  readonly daytimeMultiplier: number;
+  readonly sunExposureMultiplier: number;
+  readonly weatherMultiplier: number;
+  readonly waterMultiplier: number;
+  readonly finalMultiplier: number;
+}
+
 export interface IHydrationModifier {
   calculateMultiplier(player: Player): number;
 }

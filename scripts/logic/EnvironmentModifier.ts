@@ -1,6 +1,6 @@
 import { Player, WeatherType, world } from "@minecraft/server";
 
-import { IHydrationConfig, IHydrationModifier } from "../types/hydration";
+import { IEnvironmentSnapshot, IHydrationConfig, IHydrationModifier } from "../types/hydration";
 
 /**
  * Environment modifier should factor in not just the biome and the dimension
@@ -21,33 +21,56 @@ export class EnvironmentModifier implements IHydrationModifier {
   }
 
   public calculateMultiplier(player: Player): number {
-    let multiplier = 1;
-
-    const dimensionId = player.dimension.id;
-    const dimensionMultiplier = this.config.dimensionMultipliers[dimensionId];
-
-    if (dimensionMultiplier !== undefined) {
-      multiplier *= dimensionMultiplier;
-    }
-
-    const biomeId = this.getBiomeId(player);
-    const biomeMultiplier = this.getBiomeBase(biomeId);
-
-    if (biomeMultiplier !== undefined) {
-      multiplier *= biomeMultiplier;
-    }
-
-    multiplier *= this.getDaytimeMultiplier(dimensionId);
-    multiplier *= this.getSunExposureMultiplier(player);
-    multiplier *= this.getWeatherMultiplier(player, biomeId);
-
-    const inWater = player.isInWater;
-
-    return multiplier * (inWater ? 0.3 : 1);
+    return this.getEnvironmentSnapshot(player).finalMultiplier;
   }
 
-  private getBiomeBase(biomeId: string): number {
-    return this.config.biomeMultipliers[biomeId];
+  public getEnvironmentSnapshot(player: Player): IEnvironmentSnapshot {
+    const dimensionId = player.dimension.id;
+    const biomeId = this.getBiomeId(player);
+    const isInWater = player.isInWater;
+    const isOpenToSky = this.isOpenToSky(player);
+
+    const dimensionMultiplier = this.getDimensionMultiplier(dimensionId);
+    const biomeMultiplier = this.getBiomeMultiplier(biomeId);
+    const daytimeMultiplier = this.getDaytimeMultiplier(dimensionId);
+    const sunExposureMultiplier = this.getSunExposureMultiplier(player);
+    const weatherMultiplier = this.getWeatherMultiplier(player, biomeId, isOpenToSky);
+    const waterMultiplier = this.getWaterMultiplier(isInWater);
+
+    const finalMultiplier =
+      dimensionMultiplier *
+      biomeMultiplier *
+      daytimeMultiplier *
+      sunExposureMultiplier *
+      weatherMultiplier *
+      waterMultiplier;
+
+    return {
+      dimensionId,
+      biomeId,
+      weather: this.currentWeather,
+      isInWater,
+      isOpenToSky,
+      dimensionMultiplier,
+      biomeMultiplier,
+      daytimeMultiplier,
+      sunExposureMultiplier,
+      weatherMultiplier,
+      waterMultiplier,
+      finalMultiplier,
+    };
+  }
+
+  private getDimensionMultiplier(dimensionId: string): number {
+    const dimensionMultiplier = this.config.dimensionMultipliers[dimensionId];
+
+    return dimensionMultiplier !== undefined ? dimensionMultiplier : 1;
+  }
+
+  private getBiomeMultiplier(biomeId: string): number {
+    const biomeMultiplier = this.config.biomeMultipliers[biomeId];
+
+    return biomeMultiplier !== undefined ? biomeMultiplier : 1;
   }
 
   private getBiomeId(player: Player): string {
@@ -72,8 +95,8 @@ export class EnvironmentModifier implements IHydrationModifier {
     return multiplier;
   }
 
-  private getWeatherMultiplier(player: Player, biomeId: string): number {
-    if (player.dimension.id !== "minecraft:overworld" || this.dryBiomes.has(biomeId) || !this.getSkyExposure(player)) {
+  private getWeatherMultiplier(player: Player, biomeId: string, isOpenToSky: boolean): number {
+    if (player.dimension.id !== "minecraft:overworld" || this.dryBiomes.has(biomeId) || !isOpenToSky) {
       return 1;
     }
 
@@ -86,6 +109,10 @@ export class EnvironmentModifier implements IHydrationModifier {
     }
 
     return 1;
+  }
+
+  private getWaterMultiplier(isInWater: boolean): number {
+    return isInWater ? 0.3 : 1;
   }
 
   private getSunExposureMultiplier(player: Player): number {
@@ -103,12 +130,11 @@ export class EnvironmentModifier implements IHydrationModifier {
     return multiplier;
   }
 
-  // Used to check if the player is exposed to the open sky
-  private getSkyExposure(player: Player): number {
+  private isOpenToSky(player: Player): boolean {
     const headLocation = player.getHeadLocation();
     const topmostBlock = player.dimension.getTopmostBlock({ x: headLocation.x, z: headLocation.z });
 
-    return topmostBlock === undefined || topmostBlock.y < headLocation.y ? 1 : 0;
+    return topmostBlock === undefined || topmostBlock.y < headLocation.y;
   }
 
   private isClearDaytime(): boolean {
