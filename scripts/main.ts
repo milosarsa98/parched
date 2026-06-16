@@ -34,5 +34,8 @@ uiLoop.start();
 punishmentLoop.start();
 
 // Initializing handlers
-new PlayerLifecycleHandler(hydrationEngine, tracker, uiLoop);
-new ItemConsumableHandler(hydrationEngine, HYDRATION_CONFIG);
+const playerLifecycleHandler = new PlayerLifecycleHandler(hydrationEngine, tracker, uiLoop);
+const itemConsumableHandler = new ItemConsumableHandler(hydrationEngine, HYDRATION_CONFIG);
+
+playerLifecycleHandler.register();
+itemConsumableHandler.register();
