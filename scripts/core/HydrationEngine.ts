@@ -1,6 +1,11 @@
 import { Player } from "@minecraft/server";
 
-import { IHydrationConfig, IHydrationDrainRateContributor, IHydrationModifier } from "../types/hydration";
+import {
+  IHydrationConfig,
+  IHydrationDrainRateContributor,
+  IHydrationModifier,
+  IPlayerStatus,
+} from "../types/hydration";
 
 import { Logger } from "../utils/Logger";
 import { HydrationStatusCache } from "./HydrationStatusCache";
@@ -78,7 +83,7 @@ export class HydrationEngine {
     this.statusCache.remember(player.id, this.config.maxHydration);
   }
 
-  public getCachedStatus(player: Player) {
+  public getCachedStatus(player: Player): IPlayerStatus {
     const status = this.statusCache.get(player.id);
 
     if (status !== undefined) {
